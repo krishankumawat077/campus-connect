@@ -1,44 +1,39 @@
 const express = require("express");
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-const User = require("./models/user");
 const cors = require("cors");
-app.use(cors());
-
-dotenv.config();
 
 const app = express();
 
-// Middleware
+// Middlewares
+app.use(cors());
 app.use(express.json());
+
+// Temporary in-memory storage
+let users = [];
 
 // Test route
 app.get("/", (req, res) => {
-  res.send("Campus Connect Backend is running 🚀");
+  res.send("Campus Connect Backend is running");
 });
 
-// Create user (test)
-app.post("/api/users", async (req, res) => {
-  try {
-    const user = new User(req.body);
-    await user.save();
-    res.status(201).json(user);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+// Add user
+app.post("/api/users", (req, res) => {
+  const { name, branch, year, skills } = req.body;
+
+  if (!name || !branch || !year || !skills) {
+    return res.status(400).json({ message: "All fields are required" });
   }
+
+  users.push({ name, branch, year, skills });
+
+  res.status(201).json({ message: "User added successfully" });
 });
 
-// MongoDB connection
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("✅ MongoDB connected (LOCAL)");
-  })
-  .catch((err) => {
-    console.error("❌ MongoDB connection error:", err);
-  });
+// Get users
+app.get("/api/users", (req, res) => {
+  res.json(users);
+});
 
-// Start server
+// Port
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
