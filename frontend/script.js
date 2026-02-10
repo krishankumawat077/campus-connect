@@ -1,4 +1,4 @@
-const API = "http://localhost:5000";  //Temp - backend not deployed yet
+const API = "https://campus-connect-e5zh.onrender.com/";  
 
 document.getElementById("studentForm")?.addEventListener("submit", async (e) => {
   e.preventDefault();
